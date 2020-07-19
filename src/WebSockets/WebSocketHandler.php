@@ -9,6 +9,7 @@ use BeyondCode\LaravelWebSockets\QueryParameters;
 use BeyondCode\LaravelWebSockets\WebSockets\Channels\ChannelManager;
 use BeyondCode\LaravelWebSockets\WebSockets\Exceptions\ConnectionsOverCapacity;
 use BeyondCode\LaravelWebSockets\WebSockets\Exceptions\UnknownAppKey;
+use BeyondCode\LaravelWebSockets\WebSockets\Exceptions\UnknownOrigin;
 use BeyondCode\LaravelWebSockets\WebSockets\Exceptions\WebSocketException;
 use BeyondCode\LaravelWebSockets\WebSockets\Messages\PusherMessageFactory;
 use Exception;
@@ -30,6 +31,7 @@ class WebSocketHandler implements MessageComponentInterface
     {
         $this
             ->verifyAppKey($connection)
+            ->verifyOrigin($connection)
             ->limitConcurrentConnections($connection)
             ->generateSocketId($connection)
             ->establishConnection($connection);
@@ -71,6 +73,20 @@ class WebSocketHandler implements MessageComponentInterface
         }
 
         $connection->app = $app;
+
+        return $this;
+    }
+
+    protected function verifyOrigin(ConnectionInterface $connection)
+    {
+        $allowedOrigins = $connection->app->allowedOrigins;
+
+        $header = $connection->httpRequest->getHeader('Origin')[0];
+        $origin = parse_url($header, PHP_URL_HOST) ?: $header;
+
+        if (! empty($allowedOrigins) && ! in_array($origin, $allowedOrigins)) {
+            throw new UnknownOrigin($origin);
+        }
 
         return $this;
     }

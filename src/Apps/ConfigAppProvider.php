@@ -75,6 +75,10 @@ class ConfigAppProvider implements AppProvider
             $app->setPath($appAttributes['path']);
         }
 
+        if (isset($appAttributes['origins'])) {
+            $app->setAllowedOrigins($appAttributes['origins']);
+        }
+
         $app
             ->enableClientMessages($appAttributes['enable_client_messages'])
             ->enableStatistics($appAttributes['enable_statistics'])

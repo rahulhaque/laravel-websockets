@@ -150,6 +150,13 @@
                         this.logs = [];
                         throw new Error("Over capacity");
                     }
+
+                    if (event.error.data.code === 4009) {
+                        $('div#status').text("Unknown origin!");
+                        this.connected = false;
+                        this.logs = [];
+                        throw new Error("Unknown origin");
+                    }
                 });
 
                 this.subscribeToAllChannels();
