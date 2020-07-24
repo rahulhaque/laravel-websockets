@@ -20,6 +20,9 @@ return [
      *
      * Optionally you can disable client events so clients cannot send
      * messages to each other via the webSockets.
+     *
+     * Optionally you can add allowed origins to prevent unknown host
+     * connecting via the webSockets.
      */
     'apps' => [
         [
